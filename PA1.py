@@ -1,4 +1,5 @@
 import random
+import math
 
 N = 8
 
@@ -26,7 +27,7 @@ def calculateHeuristic(board):
     # Row-wise Check
     for i in range(N):
         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
-        print(queensInRow)
+        # numberOfAttacks +=
 
 
 def drawBoard(board):
@@ -39,3 +40,7 @@ def drawBoard(board):
 board = generateBoard(N)
 drawBoard(board)
 calculateHeuristic(board)
+
+
+def ncr(n, r):
+    return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
