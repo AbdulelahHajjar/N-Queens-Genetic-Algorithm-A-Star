@@ -21,13 +21,22 @@ def generateBoard(N):
     return board2D
 
 
+def ncr(n, r):
+    if r > n:
+        return 0
+    else:
+        return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
+
+
 def calculateHeuristic(board):
     numberOfAttacks = 0
 
     # Row-wise Check
     for i in range(N):
         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
-        # numberOfAttacks +=
+        numberOfAttacks += ncr(queensInRow, 2)
+
+    print(numberOfAttacks)
 
 
 def drawBoard(board):
@@ -40,7 +49,3 @@ def drawBoard(board):
 board = generateBoard(N)
 drawBoard(board)
 calculateHeuristic(board)
-
-
-def ncr(n, r):
-    return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
