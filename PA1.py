@@ -1,5 +1,6 @@
 import random
 import math
+from collections import defaultdict
 
 N = 8
 
@@ -37,19 +38,41 @@ def ncr(n, r):
 
 
 def calculateHeuristic(board):
+    # TODO: Explain heuristic used.
     numberOfAttacks = 0
 
-    # Row-wise Check
+    # Row-wise Check (Count possible attacks)
     for i in range(N):
         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
         numberOfAttacks += ncr(queensInRow, 2)
 
-    # Column-wise Check
+    # Column-wise Check (Count possible attacks)
     for column in range(N):
         queensInColumn = 0
         for row in range(N):
             queensInColumn += board[row][column]
         numberOfAttacks += ncr(queensInColumn, 2)
+
+    # Extract all diagonals from board (Count possible attacks)
+    mainDias = defaultdict(list)
+    altDias = defaultdict(list)
+    for i in range(N):
+        for j in range(N):
+            mainDias[i-j].append(board[i][j])
+            altDias[i+j].append(board[i][j])
+
+    # Diagonals Check (Count possible attacks)
+    queensInDiagonal = 0
+    for i in mainDias:
+        queensInDiagonal = len(list(filter(lambda x: x == 1, mainDias[i])))
+        numberOfAttacks += ncr(queensInDiagonal, 2)
+
+    queensInDiagonal = 0
+    for i in altDias:
+        queensInDiagonal = len(list(filter(lambda x: x == 1, altDias[i])))
+        numberOfAttacks += ncr(queensInDiagonal, 2)
+
+    return numberOfAttacks
 
 
 def drawBoard(board):
