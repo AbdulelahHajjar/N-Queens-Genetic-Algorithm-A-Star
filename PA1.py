@@ -18,7 +18,15 @@ def generateBoard(N):
     for i in range(0, N**2, N):
         board2D.append(board[i:i+8])
 
-    return board2D
+    # return board2D
+    return [[0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 0, 0, 1, 0, 1],
+            [0, 0, 1, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]]
 
 
 def ncr(n, r):
@@ -36,7 +44,12 @@ def calculateHeuristic(board):
         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
         numberOfAttacks += ncr(queensInRow, 2)
 
-    print(numberOfAttacks)
+    # Column-wise Check
+    for column in range(N):
+        queensInColumn = 0
+        for row in range(N):
+            queensInColumn += board[row][column]
+        numberOfAttacks += ncr(queensInColumn, 2)
 
 
 def drawBoard(board):
