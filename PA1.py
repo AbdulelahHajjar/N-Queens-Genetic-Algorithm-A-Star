@@ -4,6 +4,8 @@ from collections import defaultdict
 
 N = 8
 
+# TODO: Explain how the queens move
+
 
 def generateBoard(N):
     # In my implementation of the board, 0 == space on the board with no queen. 1 == space on the board with one queen.
