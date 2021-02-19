@@ -1,6 +1,7 @@
 import random
 import math
 from collections import defaultdict
+from queue import PriorityQueue
 
 N = 8
 
@@ -84,6 +85,33 @@ def drawBoard(board):
         print()
 
 
+class Node():
+    def __init__(self, parentNode=None, board=None):
+        self.parentNode = parentNode
+        self.board = board
+        self.gn = 0
+        self.hn = 0
+        self.fn = 0
+
+
+def astar(board):
+    root = Node(None, board)
+
+    fringe = PriorityQueue()
+    visited = []
+
+    fringe.put((calculateHeuristic(board), board))
+    while not fringe.empty():
+        currentNode = fringe.get()[1]
+        visited.append(currentNode)
+        hn = calculateHeuristic(currentNode)
+
+        # TODO: Add note
+        if hn == 0:
+            # Found board
+            # TODO: Print board
+            break
+
+
 board = generateBoard(N)
-drawBoard(board)
-calculateHeuristic(board)
+astar(board)
