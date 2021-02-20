@@ -27,15 +27,33 @@ def generateBoard(N):
     for i in range(0, N**2, N):
         board2D.append(board[i:i+N])
 
+    board2D = [[0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 1, 0, 0, 0, 0],
+               [1, 0, 0, 0, 1, 0, 0, 0],
+               [0, 1, 0, 0, 0, 1, 0, 1],
+               [0, 0, 1, 0, 0, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 0, 0]]
+
+    drawBoard(board2D)
+
+    indexRepresentationArray = []
+    for i in range(N):
+        for j in range(N):
+            if board2D[i][j] == 1:
+                indexRepresentationArray.append((i, j))
+
+    return indexRepresentationArray
     # return board2D
-    return [[0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [1, 0, 0, 0, 1, 0, 0, 0],
-            [0, 1, 0, 0, 0, 1, 0, 1],
-            [0, 0, 1, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]]
+    # return [[0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 1, 0, 0, 0, 0],
+    #         [1, 0, 0, 0, 1, 0, 0, 0],
+    #         [0, 1, 0, 0, 0, 1, 0, 1],
+    #         [0, 0, 1, 0, 0, 0, 1, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0]]
 
 
 def ncr(n, r):
@@ -47,42 +65,103 @@ def ncr(n, r):
         return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
 
 
-def calculateHeuristic(board):
-    # TODO: Explain heuristic used.
-    numberOfAttacks = 0
+# def calculateHeuristic(board):
+#     # TODO: Explain heuristic used.
+#     numberOfAttacks = 0
 
-    # Row-wise Check (Count possible attacks)
-    for i in range(N):
-        queensInRow = len(list(filter(lambda x: x == 1, board[i])))
-        numberOfAttacks += ncr(queensInRow, 2)
+#     # Row-wise Check (Count possible attacks)
+#     for i in range(N):
+#         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
+#         numberOfAttacks += ncr(queensInRow, 2)
 
-    # Column-wise Check (Count possible attacks)
-    for column in range(N):
-        queensInColumn = 0
-        for row in range(N):
-            queensInColumn += board[row][column]
-        numberOfAttacks += ncr(queensInColumn, 2)
+#     # Column-wise Check (Count possible attacks)
+#     for column in range(N):
+#         queensInColumn = 0
+#         for row in range(N):
+#             queensInColumn += board[row][column]
+#         numberOfAttacks += ncr(queensInColumn, 2)
 
-    # Extract all diagonals from board (Count possible attacks)
-    mainDias = defaultdict(list)
-    altDias = defaultdict(list)
-    for i in range(N):
-        for j in range(N):
-            mainDias[i-j].append(board[i][j])
-            altDias[i+j].append(board[i][j])
+#     # Extract all diagonals from board (Count possible attacks)
+#     mainDias = defaultdict(list)
+#     altDias = defaultdict(list)
+#     for i in range(N):
+#         for j in range(N):
+#             mainDias[i-j].append(board[i][j])
+#             altDias[i+j].append(board[i][j])
 
-    # Diagonals Check (Count possible attacks)
-    queensInDiagonal = 0
-    for i in mainDias:
-        queensInDiagonal = len(list(filter(lambda x: x == 1, mainDias[i])))
-        numberOfAttacks += ncr(queensInDiagonal, 2)
+#     # Diagonals Check (Count possible attacks)
+#     queensInDiagonal = 0
+#     for i in mainDias:
+#         queensInDiagonal = len(list(filter(lambda x: x == 1, mainDias[i])))
+#         numberOfAttacks += ncr(queensInDiagonal, 2)
 
-    queensInDiagonal = 0
-    for i in altDias:
-        queensInDiagonal = len(list(filter(lambda x: x == 1, altDias[i])))
-        numberOfAttacks += ncr(queensInDiagonal, 2)
+#     queensInDiagonal = 0
+#     for i in altDias:
+#         queensInDiagonal = len(list(filter(lambda x: x == 1, altDias[i])))
+#         numberOfAttacks += ncr(queensInDiagonal, 2)
 
-    return numberOfAttacks
+#     return numberOfAttacks
+
+
+def newCalculateHeuristic(queensIndices):
+    numAttacks = 0
+
+    tempBoard = copy.deepcopy(board)
+    while len(tempBoard) > 0:
+        queen = tempBoard[0]
+        del tempBoard[0]
+        nextQueen = (queen[0], queen[1] + 1)
+        numQueens = 1
+        while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
+            if nextQueen in tempBoard:
+                numQueens += 1
+                tempBoard.remove(nextQueen)
+            nextQueen = (nextQueen[0], nextQueen[1] + 1)
+        # print("Found: " + str(numQueens) + ", in row:" + str(queen[0]))
+        numAttacks += ncr(numQueens, 2)
+
+    tempBoard = copy.deepcopy(board)
+    while len(tempBoard) > 0:
+        queen = tempBoard[0]
+        del tempBoard[0]
+        nextQueen = (queen[0] + 1, queen[1])
+        numQueens = 1
+        while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
+            if nextQueen in tempBoard:
+                numQueens += 1
+                tempBoard.remove(nextQueen)
+            nextQueen = (nextQueen[0] + 1, nextQueen[1])
+        # print("Found: " + str(numQueens) + ", in column:" + str(queen[1]))
+        numAttacks += ncr(numQueens, 2)
+
+    tempBoard = copy.deepcopy(board)
+    while len(tempBoard) > 0:
+        queen = tempBoard[0]
+        del tempBoard[0]
+        nextQueen = (queen[0] + 1, queen[1] + 1)
+        numQueens = 1
+        while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
+            if nextQueen in tempBoard:
+                numQueens += 1
+                tempBoard.remove(nextQueen)
+            nextQueen = (nextQueen[0] + 1, nextQueen[1] + 1)
+        # print("Found: " + str(numQueens) + ", in main diagonals")
+        numAttacks += ncr(numQueens, 2)
+
+    tempBoard = copy.deepcopy(board)
+    while len(tempBoard) > 0:
+        queen = tempBoard[0]
+        del tempBoard[0]
+        nextQueen = (queen[0] + 1, queen[1] - 1)
+        numQueens = 1
+        while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
+            if nextQueen in tempBoard:
+                numQueens += 1
+                tempBoard.remove(nextQueen)
+            nextQueen = (nextQueen[0] + 1, nextQueen[1] - 1)
+        # print("Found: " + str(numQueens) + ", in alternative diagonals")
+        numAttacks += ncr(numQueens, 2)
+    return numAttacks
 
 
 def drawBoard(board):
@@ -203,4 +282,5 @@ def astar(board):
 
 
 board = generateBoard(N)
-astar(board)
+newCalculateHeuristic(board)
+# astar(board)
