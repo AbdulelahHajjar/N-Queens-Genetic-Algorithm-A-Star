@@ -36,7 +36,7 @@ def generateBoard(N):
                [0, 0, 1, 0, 0, 0, 1, 0],
                [0, 0, 0, 0, 0, 0, 0, 0]]
 
-    drawBoard(board2D)
+    # drawBoard(board2D)
 
     indexRepresentationArray = []
     for i in range(N):
@@ -164,10 +164,20 @@ def newCalculateHeuristic(queensIndices):
     return numAttacks
 
 
-def drawBoard(board):
+# def drawBoard(board):
+#     for i in range(N):
+#         for j in range(N):
+#             print(board[i][j], end=' ', sep='')
+#         print()
+
+
+def newDrawBoard(queensIndices):
     for i in range(N):
         for j in range(N):
-            print(board[i][j], end=' ', sep='')
+            if (i, j) in queensIndices:
+                print("1", end=' ', sep='')
+            else:
+                print("0", end=' ', sep='')
         print()
 
 
@@ -182,10 +192,7 @@ class Node():
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, self.board, other.board), True):
-                return True
-            else:
-                return False
+            return self.board == other.board
         else:
             return False
 
@@ -193,29 +200,54 @@ class Node():
         return self.fn() < other.fn()
 
 
-def generateNextStatesForQueenAt(i, j, board):
+# def generateNextStatesForQueenAt(i, j, board):
+#     nextStates = []
+#     for xOffset in [-1, 0, 1]:
+#         for yOffset in [-1, 0, 1]:
+#             if xOffset == 0 and yOffset == 0:
+#                 continue
+
+#             newI = i + xOffset
+#             newJ = j + yOffset
+
+#             if newI < 0 or newJ < 0 or newI >= N or newJ >= N:
+#                 continue
+
+#             if board[newI][newJ] == 1:
+#                 continue
+
+#             tempBoard = copy.deepcopy(board)
+#             tempBoard[i][j] = 0
+#             tempBoard[newI][newJ] = 1
+
+#             node = Node(tempBoard)
+#             nextStates.append(node)
+#     return nextStates
+
+
+def newGenerateNextStatesForQueenAt(i, j, queensIndices):
     nextStates = []
-    for xOffset in [-1, 0, 1]:
-        for yOffset in [-1, 0, 1]:
-            if xOffset == 0 and yOffset == 0:
+    for iOffset in [-1, 0, 1]:
+        for jOffset in [-1, 0, 1]:
+            if iOffset == 0 and jOffset == 0:
                 continue
 
-            newI = i + xOffset
-            newJ = j + yOffset
+            newI = i + iOffset
+            newJ = j + jOffset
 
             if newI < 0 or newJ < 0 or newI >= N or newJ >= N:
                 continue
 
-            if board[newI][newJ] == 1:
+            if (newI, newJ) in queensIndices:
                 continue
 
-            tempBoard = copy.deepcopy(board)
-            tempBoard[i][j] = 0
-            tempBoard[newI][newJ] = 1
+            newQueensIndices = copy.deepcopy(queensIndices)
+            newQueensIndices.remove((i, j))
+            newQueensIndices.append((newI, newJ))
 
-            node = Node(tempBoard)
+            node = Node(newQueensIndices)
             nextStates.append(node)
-    return nextStates
+        return nextStates
 
 
 def astar(board):
@@ -224,7 +256,7 @@ def astar(board):
     visited = []
 
     root = Node(board)
-    root.hn = calculateHeuristic(root.board)
+    root.hn = newCalculateHeuristic(root.board)
     root.gn = 0
 
     heapq.heappush(fringe, root)
@@ -236,7 +268,7 @@ def astar(board):
 
         visited.append(currentNode)
 
-        drawBoard(currentNode.board)
+        newDrawBoard(currentNode.board)
         print()
 
         # TODO: Add note
@@ -282,5 +314,4 @@ def astar(board):
 
 
 board = generateBoard(N)
-newCalculateHeuristic(board)
-# astar(board)
+astar(board)
