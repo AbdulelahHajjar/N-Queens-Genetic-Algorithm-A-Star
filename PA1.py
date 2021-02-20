@@ -27,33 +27,12 @@ def generateBoard(N):
     for i in range(0, N**2, N):
         board2D.append(board[i:i+N])
 
-    board2D = [[0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 1, 0, 0, 0, 0],
-               [1, 0, 0, 0, 1, 0, 0, 0],
-               [0, 1, 0, 0, 0, 1, 0, 1],
-               [0, 0, 1, 0, 0, 0, 1, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0]]
-
-    # drawBoard(board2D)
-
     indexRepresentationArray = []
     for i in range(N):
         for j in range(N):
             if board2D[i][j] == 1:
                 indexRepresentationArray.append((i, j))
-
     return indexRepresentationArray
-    # return board2D
-    # return [[0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 1, 0, 0, 0, 0],
-    #         [1, 0, 0, 0, 1, 0, 0, 0],
-    #         [0, 1, 0, 0, 0, 1, 0, 1],
-    #         [0, 0, 1, 0, 0, 0, 1, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0]]
 
 
 def ncr(n, r):
@@ -106,39 +85,40 @@ def ncr(n, r):
 def newCalculateHeuristic(queensIndices):
     numAttacks = 0
 
-    tempBoard = copy.deepcopy(board)
+    tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
         queen = tempBoard[0]
         del tempBoard[0]
-        nextQueen = (queen[0], queen[1] + 1)
+        nextQueen = (queen[0], 0)
         numQueens = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
                 numQueens += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0], nextQueen[1] + 1)
-        # print("Found: " + str(numQueens) + ", in row:" + str(queen[0]))
+        # print("Found: " + str(numQueens) + ", in row: " + str(queen[0]))
         numAttacks += ncr(numQueens, 2)
 
-    tempBoard = copy.deepcopy(board)
+    tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
         queen = tempBoard[0]
         del tempBoard[0]
-        nextQueen = (queen[0] + 1, queen[1])
+        nextQueen = (0, queen[1])
         numQueens = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
                 numQueens += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0] + 1, nextQueen[1])
-        # print("Found: " + str(numQueens) + ", in column:" + str(queen[1]))
+        # print("Found: " + str(numQueens) + ", in column: " + str(queen[1]))
         numAttacks += ncr(numQueens, 2)
 
-    tempBoard = copy.deepcopy(board)
+    tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
         queen = tempBoard[0]
         del tempBoard[0]
-        nextQueen = (queen[0] + 1, queen[1] + 1)
+        nextQueen = (queen[0] - min(queen[0], queen[1]),
+                     queen[1] - min(queen[0], queen[1]))
         numQueens = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
@@ -148,11 +128,18 @@ def newCalculateHeuristic(queensIndices):
         # print("Found: " + str(numQueens) + ", in main diagonals")
         numAttacks += ncr(numQueens, 2)
 
-    tempBoard = copy.deepcopy(board)
+    tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
         queen = tempBoard[0]
         del tempBoard[0]
-        nextQueen = (queen[0] + 1, queen[1] - 1)
+        firstIDiagonal = queen[0]
+        firstJDiagonal = queen[1]
+        while firstIDiagonal >= 0 and firstJDiagonal < N:
+            if firstIDiagonal - 1 < 0 or firstJDiagonal + 1 >= N:
+                break
+            firstIDiagonal -= 1
+            firstJDiagonal += 1
+        nextQueen = (firstIDiagonal, firstJDiagonal)
         numQueens = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
@@ -247,7 +234,7 @@ def newGenerateNextStatesForQueenAt(i, j, queensIndices):
 
             node = Node(newQueensIndices)
             nextStates.append(node)
-        return nextStates
+    return nextStates
 
 
 def astar(board):
@@ -261,14 +248,15 @@ def astar(board):
 
     heapq.heappush(fringe, root)
     while len(fringe) > 0:
-        print("Visited: " + str(len(visited)) +
-              ", Fringe: " + str(len(fringe)))
-
         currentNode = heapq.heappop(fringe)
+
+        print("Visited: " + str(len(visited)) +
+              ", Fringe: " + str(len(fringe)) + ", Current h(n): " + str(currentNode.hn))
 
         visited.append(currentNode)
 
         newDrawBoard(currentNode.board)
+
         print()
 
         # TODO: Add note
@@ -276,31 +264,29 @@ def astar(board):
             # Found board
             # TODO: Print board
             print("Found solution.")
+            print(currentNode.board)
             break
 
         childrenNodes = []
-        for i in range(N):
-            for j in range(N):
-                if currentNode.board[i][j] == 0:
-                    continue
-                childrenNodes = list(
-                    chain(childrenNodes, generateNextStatesForQueenAt(i, j, currentNode.board)))
+        for queen in currentNode.board:
+            childrenNodes = list(
+                chain(childrenNodes, newGenerateNextStatesForQueenAt(queen[0], queen[1], currentNode.board)))
 
         for childNode in childrenNodes:
-            childNode.hn = calculateHeuristic(childNode.board)
-            childNode.gn = currentNode.gn + 1
+            childNode.hn = newCalculateHeuristic(childNode.board)
+            childNode.gn = 1
 
             isVisitedBefore = False
             isFringedBefore = False
             childNodeIsBetter = False
 
             for visitedNode in visited:
-                if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, visitedNode.board, childNode.board), True):
+                if visitedNode.board == childNode.board:
                     isVisitedBefore = True
                     break
 
             for i in range(len(fringe)):
-                if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, fringe[i].board, childNode.board), True):
+                if fringe[i].board == childNode.board:
                     isFringedBefore = True
                     childNodeIsBetter = childNode.fn() < fringe[i].fn()
                     del fringe[i]
@@ -314,4 +300,5 @@ def astar(board):
 
 
 board = generateBoard(N)
+newDrawBoard(board)
 astar(board)
