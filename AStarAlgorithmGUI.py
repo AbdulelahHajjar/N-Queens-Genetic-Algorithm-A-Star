@@ -17,15 +17,25 @@ WIDTH = 800
 HEIGHT = 600
 SIDEBAR_WIDTH = 200
 
-N = 5
-
-SQUARE_SIZE = (WIDTH - SIDEBAR_WIDTH) // N
-
-QUEEN_IMAGE = pygame.transform.scale(
-    pygame.image.load("queen.png"), (SQUARE_SIZE, SQUARE_SIZE))
+N = 8
 
 
-def start():
+def squareSize(N):
+    return (WIDTH - SIDEBAR_WIDTH) // N
+
+
+queenImage = pygame.transform.scale(
+    pygame.image.load("queen.png"), (squareSize(N), squareSize(N)))
+
+
+def start(numQueens):
+    global N
+    N = numQueens
+
+    global queenImage
+    queenImage = pygame.transform.scale(
+        pygame.image.load("queen.png"), (squareSize(N), squareSize(N)))
+
     pygame.init()
     pygame.display.set_caption("A* Algorithm")
 
@@ -104,10 +114,10 @@ def drawQueens(screen, board):
         for col in range(N):
             color = colors[(row + col) % 2]
             pygame.draw.rect(screen, color, pygame.Rect(
-                col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                col * squareSize(N), row * squareSize(N), squareSize(N), squareSize(N)))
             if (row, col) in board:
-                screen.blit(QUEEN_IMAGE, pygame.Rect(col * SQUARE_SIZE,
-                                                     row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                screen.blit(queenImage, pygame.Rect(col * squareSize(N),
+                                                    row * squareSize(N), squareSize(N), squareSize(N)))
 
 
 def generateBoard(N):

@@ -13,16 +13,26 @@ SIDEBAR_WIDTH = 200
 
 numQueens = 8
 
-SQUARE_SIZE = (WIDTH - SIDEBAR_WIDTH) // numQueens
 
-QUEEN_IMAGE = pygame.transform.scale(
-    pygame.image.load("queen.png"), (SQUARE_SIZE, SQUARE_SIZE))
+def squareSize(N):
+    return (WIDTH - SIDEBAR_WIDTH) // numQueens
 
 
-def start(numQueens, populationCount, mutationProbability):
+queenImage = pygame.transform.scale(
+    pygame.image.load("queen.png"), (squareSize(numQueens), squareSize(numQueens)))
+
+
+def start(n, populationCount, maxGenerations, mutationProbability):
     pygame.init()
     pygame.display.set_caption("Genetic Algorithm")
     population = generateQueenIndicesPopulation(numQueens, populationCount)
+
+    global numQueens
+    numQueens = n
+
+    global queenImage
+    queenImage = pygame.transform.scale(
+        pygame.image.load("queen.png"), (squareSize(numQueens), squareSize(numQueens)))
 
     generation = 0
 
@@ -56,10 +66,10 @@ def drawQueens(screen, board):
         for col in range(numQueens):
             color = colors[(row + col) % 2]
             pygame.draw.rect(screen, color, pygame.Rect(
-                col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                col * squareSize(numQueens), row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
             if board[col] == row:
-                screen.blit(QUEEN_IMAGE, pygame.Rect(col * SQUARE_SIZE,
-                                                     row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                screen.blit(QUEEN_IMAGE, pygame.Rect(col * squareSize(numQueens),
+                                                     row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
 
 
 def generateQueenIndicesPopulation(numQueens, populationCount):
@@ -144,4 +154,5 @@ def solutionInPopulation(population):
     return None
 
 
-start(numQueens, 300, 0.1)
+if __name__ == '__main__':
+    start(numQueens, 300, 0.1)
