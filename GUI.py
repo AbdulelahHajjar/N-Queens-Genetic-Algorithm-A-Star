@@ -1,31 +1,32 @@
 from tkinter import *
+from PIL import ImageTk, Image
+
 windowWidth = 800
 windowHeight = 600
+sideBarWidth = 200
+numQueens = 8
+
+queenIconSize = int((windowWidth - sideBarWidth) / numQueens)
+
+
+def drawBoard():
+    canvas = Canvas(window, width=600, height=600)
+    canvas.pack()
+    for i in range(numQueens):
+        for j in range(numQueens):
+            image = Image.open('example.png')
+            image = image.resize(
+                (queenIconSize, queenIconSize), Image.ANTIALIAS)
+            my_img = ImageTk.PhotoImage(image)
+            canvas.create_image(0, 0, image=my_img, anchor="nw")
+
+            a = canvas.create_rectangle(50, 0, 50, 0, fill='red')
+    canvas.move(a, sideBarWidth, 0)
+
 
 window = Tk()
-
-# for i in range(3):
-#     for j in range(3):
-#         frame = tk.Frame(
-#             master=window,
-#             relief=tk.RAISED,
-#             borderwidth=1
-#         )
-#         frame.grid(row=i, column=j, padx=5, pady=5)
-#         label = tk.Label(master=frame, text=f"Row {i}\nColumn {j}")
-#         label.pack()
 
 window.title('Hello Python')
 window.geometry(str(windowWidth)+"x"+str(windowHeight))
 
-lbl = Label(window, text="This is Label widget",
-            fg='red', font=("Helvetica", 16))
-lbl.place(x=200, y=50)
-
 window.mainloop()
-
-
-def emptyBoard():
-    for i in range(8):
-        for j in range(8):
-            print("test")
