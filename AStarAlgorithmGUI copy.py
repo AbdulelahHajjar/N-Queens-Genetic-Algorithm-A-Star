@@ -28,6 +28,8 @@ def start():
     pygame.init()
     pygame.display.set_caption("A* Algorithm")
 
+    board = generateBoard(N)
+
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     run = True
     clock = pygame.time.Clock()
@@ -35,13 +37,12 @@ def start():
     fringe = []
     visited = []
 
-    board = generateBoard(N)
     root = Node(board)
     root.hn = newCalculateHeuristic(root.board)
     root.gn = 0
 
     heapq.heappush(fringe, root)
-    solutionFound = False
+
     while run:
         clock.tick(FPS)
         screen.fill(pygame.Color("white"))
@@ -50,15 +51,14 @@ def start():
                 run = False
 
         if len(fringe) > 0:
-            if solutionFound == False:
-                currentNode = heapq.heappop(fringe)
+            print("here")
+            currentNode = heapq.heappop(fringe)
+            visited.append(currentNode)
             drawGameState(screen, currentNode.board)
 
             if currentNode.hn == 0:
-                solutionFound = True
+                pass
             else:
-                visited.append(currentNode)
-
                 childrenNodes = []
                 for queen in currentNode.board:
                     childrenNodes = list(
@@ -80,7 +80,7 @@ def start():
                     for i in range(len(fringe)):
                         if fringe[i].board == childNode.board:
                             isFringedBefore = True
-                            childNodeIsBetter = childNode.hn < fringe[i].hn
+                            childNodeIsBetter = childNode.fn() < fringe[i].fn()
                             break
 
                     if not isVisitedBefore and not isFringedBefore:
@@ -148,28 +148,28 @@ def newCalculateHeuristic(queensIndices):
         queen = tempBoard[0]
         del tempBoard[0]
         nextQueen = (queen[0], 0)
-        numQueens = 1
+        N = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
-                numQueens += 1
+                N += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0], nextQueen[1] + 1)
-        # print("Found: " + str(numQueens) + ", in row: " + str(queen[0]))
-        numAttacks += ncr(numQueens, 2)
+        # print("Found: " + str(N) + ", in row: " + str(queen[0]))
+        numAttacks += ncr(N, 2)
 
     tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
         queen = tempBoard[0]
         del tempBoard[0]
         nextQueen = (0, queen[1])
-        numQueens = 1
+        N = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
-                numQueens += 1
+                N += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0] + 1, nextQueen[1])
-        # print("Found: " + str(numQueens) + ", in column: " + str(queen[1]))
-        numAttacks += ncr(numQueens, 2)
+        # print("Found: " + str(N) + ", in column: " + str(queen[1]))
+        numAttacks += ncr(N, 2)
 
     tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
@@ -177,14 +177,14 @@ def newCalculateHeuristic(queensIndices):
         del tempBoard[0]
         nextQueen = (queen[0] - min(queen[0], queen[1]),
                      queen[1] - min(queen[0], queen[1]))
-        numQueens = 1
+        N = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
-                numQueens += 1
+                N += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0] + 1, nextQueen[1] + 1)
-        # print("Found: " + str(numQueens) + ", in main diagonals")
-        numAttacks += ncr(numQueens, 2)
+        # print("Found: " + str(N) + ", in main diagonals")
+        numAttacks += ncr(N, 2)
 
     tempBoard = copy.deepcopy(queensIndices)
     while len(tempBoard) > 0:
@@ -198,15 +198,25 @@ def newCalculateHeuristic(queensIndices):
             firstIDiagonal -= 1
             firstJDiagonal += 1
         nextQueen = (firstIDiagonal, firstJDiagonal)
-        numQueens = 1
+        N = 1
         while nextQueen[0] < N and nextQueen[1] < N and nextQueen[0] >= 0 and nextQueen[1] >= 0:
             if nextQueen in tempBoard:
-                numQueens += 1
+                N += 1
                 tempBoard.remove(nextQueen)
             nextQueen = (nextQueen[0] + 1, nextQueen[1] - 1)
-        # print("Found: " + str(numQueens) + ", in alternative diagonals")
-        numAttacks += ncr(numQueens, 2)
+        # print("Found: " + str(N) + ", in alternative diagonals")
+        numAttacks += ncr(N, 2)
     return numAttacks
+
+
+def newDrawBoard(queensIndices):
+    for i in range(N):
+        for j in range(N):
+            if (i, j) in queensIndices:
+                print("1", end=' ', sep='')
+            else:
+                print("0", end=' ', sep='')
+        print()
 
 
 class Node():
