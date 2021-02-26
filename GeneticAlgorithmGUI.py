@@ -55,7 +55,7 @@ def start(n, populationCount, maxGenerations, mutationProbability):
                     pause = True
 
         drawGameState(screen, population[0].indices, populationCount,
-                      generation, maxGenerations, mutationProbability)
+                      generation, maxGenerations, mutationProbability, foundSolution)
 
         if not pause and generation <= maxGenerations and (foundSolution == False and solutionInPopulation(population) == None):
             population = breedPopulation(population, mutationProbability)
@@ -65,7 +65,7 @@ def start(n, populationCount, maxGenerations, mutationProbability):
     pygame.quit()
 
 
-def drawGameState(screen, board, populationSize, curGen, maxGen, mutationRate):
+def drawGameState(screen, board, populationSize, curGen, maxGen, mutationRate, foundSolution):
     drawQueens(screen, board)
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
     textsurface = font.render(
@@ -81,6 +81,10 @@ def drawGameState(screen, board, populationSize, curGen, maxGen, mutationRate):
     textsurface = font.render(
         f"Mutation Rate:{mutationRate}", False, (0, 0, 0))
     screen.blit(textsurface, (0, 60))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Solution found" if foundSolution else "Solution not found", False, (255 if not foundSolution else 0, 255 if foundSolution else 0, 0))
+    screen.blit(textsurface, (0, 80))
 
 
 def drawQueens(screen, board):

@@ -70,7 +70,7 @@ def start(numQueens):
         if len(fringe) > 0:
             if solutionFound == False and not pause:
                 currentNode = heapq.heappop(fringe)
-            drawGameState(screen, currentNode.board, step)
+            drawGameState(screen, currentNode.board, step, solutionFound)
             if currentNode.hn == 0:
                 solutionFound = True
             elif not pause:
@@ -115,6 +115,11 @@ def drawGameState(screen, board, step, foundSolution):
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
     textsurface = font.render(f"Step #: {step}", False, (0, 0, 0))
     screen.blit(textsurface, (0, 0))
+
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Solution found" if foundSolution else "Solution not found", False, (255 if not foundSolution else 0, 255 if foundSolution else 0, 0))
+    screen.blit(textsurface, (0, 20))
 
 
 def drawQueens(screen, board):
