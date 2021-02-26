@@ -289,13 +289,13 @@ def astar(board):
                 if fringe[i].board == childNode.board:
                     isFringedBefore = True
                     childNodeIsBetter = childNode.fn() < fringe[i].fn()
-                    del fringe[i]
-                    heapq.heapify(fringe)
                     break
 
             if not isVisitedBefore and not isFringedBefore:
                 heapq.heappush(fringe, childNode)
             elif isFringedBefore and childNodeIsBetter:
+                del fringe[i]
+                heapq.heapify(fringe)
                 heapq.heappush(fringe, childNode)
 
 
