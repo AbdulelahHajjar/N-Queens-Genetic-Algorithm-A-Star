@@ -313,4 +313,4 @@ def astar(board):
 
 
 if __name__ == '__main__':
-    start()
+    start(8)

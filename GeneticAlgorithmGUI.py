@@ -60,7 +60,8 @@ def start(n, populationCount, maxGenerations, mutationProbability):
         if not pause and generation <= maxGenerations and (foundSolution == False and solutionInPopulation(population) == None):
             population = breedPopulation(population, mutationProbability)
         else:
-            foundSolution = True
+            if solutionInPopulation(population) != None and generation <= maxGenerations:
+                foundSolution = True
         pygame.display.flip()
     pygame.quit()
 
@@ -182,4 +183,4 @@ def solutionInPopulation(population):
 
 
 if __name__ == '__main__':
-    start(numQueens, 300, 0.1)
+    start(numQueens, 300, 200, 0.1)
