@@ -134,7 +134,7 @@ class Ui_mainWindow(object):
 
     def gaBtnClicked(self, numQueens, populationCount, maxGens, mutationRate):
         GeneticAlgorithmGUI.start(
-            numQueens, populationCount, maxGens, mutationRate)
+            int(numQueens), int(populationCount), int(maxGens), float(mutationRate))
 
     def aStarBtnClicked(self, numQueens):
         AStarAlgorithmGUI.start(int(numQueens))

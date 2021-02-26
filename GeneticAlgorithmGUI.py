@@ -25,7 +25,6 @@ queenImage = pygame.transform.scale(
 def start(n, populationCount, maxGenerations, mutationProbability):
     pygame.init()
     pygame.display.set_caption("Genetic Algorithm")
-    population = generateQueenIndicesPopulation(numQueens, populationCount)
 
     global numQueens
     numQueens = n
@@ -33,6 +32,8 @@ def start(n, populationCount, maxGenerations, mutationProbability):
     global queenImage
     queenImage = pygame.transform.scale(
         pygame.image.load("queen.png"), (squareSize(numQueens), squareSize(numQueens)))
+
+    population = generateQueenIndicesPopulation(numQueens, populationCount)
 
     generation = 0
 
@@ -68,8 +69,8 @@ def drawQueens(screen, board):
             pygame.draw.rect(screen, color, pygame.Rect(
                 col * squareSize(numQueens), row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
             if board[col] == row:
-                screen.blit(QUEEN_IMAGE, pygame.Rect(col * squareSize(numQueens),
-                                                     row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
+                screen.blit(queenImage, pygame.Rect(col * squareSize(numQueens),
+                                                    row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
 
 
 def generateQueenIndicesPopulation(numQueens, populationCount):
