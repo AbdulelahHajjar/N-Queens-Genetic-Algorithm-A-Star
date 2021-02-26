@@ -9,6 +9,7 @@ from itertools import *
 import functools
 import heapq
 from Functions import ncr
+from ASBoard import ASBoard
 
 FPS = 60
 
@@ -16,7 +17,7 @@ WIDTH = 800
 HEIGHT = 600
 SIDEBAR_WIDTH = 200
 
-N = 8
+N = 5
 
 SQUARE_SIZE = (WIDTH - SIDEBAR_WIDTH) // N
 
@@ -36,7 +37,7 @@ def start():
     visited = []
 
     board = generateBoard(N)
-    root = Node(board)
+    root = ASBoard(board)
     root.hn = newCalculateHeuristic(root.board)
     root.gn = 0
 
@@ -200,25 +201,6 @@ def newCalculateHeuristic(queensIndices):
     return numAttacks
 
 
-class Node():
-    def __init__(self, board=None):
-        self.board = board
-        self.gn = 0
-        self.hn = 0
-
-    def fn(self):
-        return self.gn + self.hn
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.board == other.board
-        else:
-            return False
-
-    def __lt__(self, other):
-        return self.fn() < other.fn()
-
-
 def newGenerateNextStatesForQueenAt(i, j, queensIndices):
     nextStates = []
     for iOffset in [-1, 0, 1]:
@@ -239,7 +221,7 @@ def newGenerateNextStatesForQueenAt(i, j, queensIndices):
             newQueensIndices.remove((i, j))
             newQueensIndices.append((newI, newJ))
 
-            node = Node(newQueensIndices)
+            node = ASBoard(newQueensIndices)
             nextStates.append(node)
     return nextStates
 
@@ -249,7 +231,7 @@ def astar(board):
     fringe = []
     visited = []
 
-    root = Node(board)
+    root = ASBoard(board)
     root.hn = newCalculateHeuristic(root.board)
     root.gn = 0
 
