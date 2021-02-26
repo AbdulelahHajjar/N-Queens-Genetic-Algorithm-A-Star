@@ -16,7 +16,7 @@ numQueens = 8
 SQUARE_SIZE = (WIDTH - SIDEBAR_WIDTH) // numQueens
 
 QUEEN_IMAGE = pygame.transform.scale(
-    pygame.image.load("example.png"), (SQUARE_SIZE, SQUARE_SIZE))
+    pygame.image.load("queen.png"), (SQUARE_SIZE, SQUARE_SIZE))
 
 
 def start(numQueens, populationCount, mutationProbability):
