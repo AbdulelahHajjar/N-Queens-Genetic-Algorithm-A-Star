@@ -1,55 +1,8 @@
 import random
 from random import randint
 import math
+from GABoard import GABoard
 import copy
-
-N = 10
-mutationProbability = 0.1
-
-
-class GABoard():
-    def __init__(self, indices=None):
-        self.indices = indices
-
-    def fitness(self):
-        # It is not needed to check for column-wise attacks because the indices array implementation does not allow more than one queen per column.
-
-        # Check for duplicates by converting it into a set (removes duplicates, i.e., no row attacks.)
-        indicesCopy = copy.deepcopy(self.indices)
-        numAttacks = 0
-        if len(indicesCopy) != len(set(indicesCopy)):
-            for row in range(len(indicesCopy)):
-                result = list(filter(lambda x: x == row, indicesCopy))
-                rowQueens = len(result)
-                numAttacks += ncr(rowQueens, 2)
-
-        checkedIndices = []
-        for column in range(len(indicesCopy)):
-            row = indicesCopy[column]
-            diagonalQueens = 0
-            while (row, column) not in checkedIndices and row >= 0 and row < len(indicesCopy) and column >= 0 and column < len(indicesCopy):
-                if indicesCopy[column] == row:
-                    diagonalQueens += 1
-                checkedIndices.append((row, column))
-                row += 1
-                column += 1
-            numAttacks += ncr(diagonalQueens, 2)
-
-        checkedIndices = []
-        for column in range(len(indicesCopy)):
-            row = indicesCopy[column]
-            diagonalQueens = 0
-            while (row, column) not in checkedIndices and row >= 0 and row < len(indicesCopy) and column >= 0 and column < len(indicesCopy):
-                if indicesCopy[column] == row:
-                    diagonalQueens += 1
-                checkedIndices.append((row, column))
-                row -= 1
-                column += 1
-            numAttacks += ncr(diagonalQueens, 2)
-        return numAttacks
-
-    def __lt__(self, other):
-        return self.fitness() < other.fitness()
 
 
 def generateQueenIndicesPopulation(numQueens, populationCount):
@@ -64,28 +17,15 @@ def generateQueenIndicesPopulation(numQueens, populationCount):
     return population
 
 
-def drawBoard(indices):
-    for i in range(len(indices)):
-        for j in range(len(indices)):
-            print("1 " if i == indices[j] else "0 ", end="")
-        print("")
-
-
-def ncr(n, r):
-    if r > n:
-        return 0
-    elif r == n:
-        return 1
-    else:
-        return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
-
-
 def geneticAlgorithm(p):
     population = p
     solution = solutionInPopulation(population)
     generation = 1
 
     while solution == None:
+        global currentFittestBoard
+        currentFittestBoard = population[0].indices
+        print("Best Board:", currentFittestBoard)
         newPopulation = []
         for i in range(len(population)):
             s = len(population)
@@ -100,7 +40,23 @@ def geneticAlgorithm(p):
         population = newPopulation
         solution = solutionInPopulation(population)
         generation += 1
-    drawBoard(solution.indices)
+
+
+def breedPopulation(p, mutationProbability):
+    population = p
+    newPopulation = []
+    for i in range(len(population)):
+        print("jaja", i)
+        s = len(population)
+        index1 = int(s * random.random() ** (len(population) / 15))
+        index2 = int(s * random.random() ** (len(population) / 15))
+        parent1 = population[index1]
+        parent2 = population[index2]
+        child = crossover(parent1, parent2)
+        child = mutate(child, mutationProbability)
+        newPopulation.append(child)
+    newPopulation.sort()
+    return newPopulation
 
 
 def mutate(child, probaility):
@@ -132,5 +88,24 @@ def solutionInPopulation(population):
     return None
 
 
-population = generateQueenIndicesPopulation(N, 300)
-geneticAlgorithm(population)
+def start(numQueens, populationCount, mp):
+    mutationProbability = mp
+    population = generateQueenIndicesPopulation(numQueens, populationCount)
+    geneticAlgorithm(population)
+
+
+# def startBackgroundAlgorithm(numQueens, populationCount, mp):
+#     def start(numQueens, populationCount, mp):
+#         print("Starting genetic algorithm: N:", numQueens,
+#               ", populationCount:", populationCount, "mutation %:", mp)
+#         mutationProbability = mp
+#         population = generateQueenIndicesPopulation(numQueens, populationCount)
+#         geneticAlgorithm(population)
+
+#     thread = threading.Thread(
+#         target=start, name="GA", args=[numQueens, populationCount, mp])
+#     thread.start()
+
+
+if __name__ == "__main__":
+    main()

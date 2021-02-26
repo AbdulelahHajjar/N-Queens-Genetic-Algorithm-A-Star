@@ -44,44 +44,6 @@ def ncr(n, r):
         return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
 
 
-# def calculateHeuristic(board):
-#     # TODO: Explain heuristic used.
-#     numberOfAttacks = 0
-
-#     # Row-wise Check (Count possible attacks)
-#     for i in range(N):
-#         queensInRow = len(list(filter(lambda x: x == 1, board[i])))
-#         numberOfAttacks += ncr(queensInRow, 2)
-
-#     # Column-wise Check (Count possible attacks)
-#     for column in range(N):
-#         queensInColumn = 0
-#         for row in range(N):
-#             queensInColumn += board[row][column]
-#         numberOfAttacks += ncr(queensInColumn, 2)
-
-#     # Extract all diagonals from board (Count possible attacks)
-#     mainDias = defaultdict(list)
-#     altDias = defaultdict(list)
-#     for i in range(N):
-#         for j in range(N):
-#             mainDias[i-j].append(board[i][j])
-#             altDias[i+j].append(board[i][j])
-
-#     # Diagonals Check (Count possible attacks)
-#     queensInDiagonal = 0
-#     for i in mainDias:
-#         queensInDiagonal = len(list(filter(lambda x: x == 1, mainDias[i])))
-#         numberOfAttacks += ncr(queensInDiagonal, 2)
-
-#     queensInDiagonal = 0
-#     for i in altDias:
-#         queensInDiagonal = len(list(filter(lambda x: x == 1, altDias[i])))
-#         numberOfAttacks += ncr(queensInDiagonal, 2)
-
-#     return numberOfAttacks
-
-
 def newCalculateHeuristic(queensIndices):
     numAttacks = 0
 
@@ -151,13 +113,6 @@ def newCalculateHeuristic(queensIndices):
     return numAttacks
 
 
-# def drawBoard(board):
-#     for i in range(N):
-#         for j in range(N):
-#             print(board[i][j], end=' ', sep='')
-#         print()
-
-
 def newDrawBoard(queensIndices):
     for i in range(N):
         for j in range(N):
@@ -185,31 +140,6 @@ class Node():
 
     def __lt__(self, other):
         return self.fn() < other.fn()
-
-
-# def generateNextStatesForQueenAt(i, j, board):
-#     nextStates = []
-#     for xOffset in [-1, 0, 1]:
-#         for yOffset in [-1, 0, 1]:
-#             if xOffset == 0 and yOffset == 0:
-#                 continue
-
-#             newI = i + xOffset
-#             newJ = j + yOffset
-
-#             if newI < 0 or newJ < 0 or newI >= N or newJ >= N:
-#                 continue
-
-#             if board[newI][newJ] == 1:
-#                 continue
-
-#             tempBoard = copy.deepcopy(board)
-#             tempBoard[i][j] = 0
-#             tempBoard[newI][newJ] = 1
-
-#             node = Node(tempBoard)
-#             nextStates.append(node)
-#     return nextStates
 
 
 def newGenerateNextStatesForQueenAt(i, j, queensIndices):
@@ -302,3 +232,6 @@ def astar(board):
 board = generateBoard(N)
 newDrawBoard(board)
 astar(board)
+
+if __name__ == "__main__":
+    main()
