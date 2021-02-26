@@ -2,13 +2,13 @@ import pygame
 from random import randint
 import copy
 import random
-import math
 from collections import defaultdict
 from queue import PriorityQueue
 import time
 from itertools import *
 import functools
 import heapq
+from Functions import ncr
 
 FPS = 60
 
@@ -129,15 +129,6 @@ def generateBoard(N):
             if board2D[i][j] == 1:
                 indexRepresentationArray.append((i, j))
     return indexRepresentationArray
-
-
-def ncr(n, r):
-    if r > n:
-        return 0
-    elif r == n:
-        return 1
-    else:
-        return int(math.factorial(n) / (math.factorial(r) * math.factorial(n - r)))
 
 
 def newCalculateHeuristic(queensIndices):
