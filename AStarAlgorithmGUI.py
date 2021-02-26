@@ -13,15 +13,14 @@ from ASBoard import ASBoard
 
 FPS = 60
 
-WIDTH = 800
+WIDTH = 600
 HEIGHT = 600
-SIDEBAR_WIDTH = 200
 
 N = 8
 
 
 def squareSize(N):
-    return (WIDTH - SIDEBAR_WIDTH) // N
+    return (WIDTH) // N
 
 
 queenImage = pygame.transform.scale(
@@ -31,7 +30,7 @@ queenImage = pygame.transform.scale(
 def start(numQueens):
     global N
     N = numQueens
-
+    pause = False
     global queenImage
     queenImage = pygame.transform.scale(
         pygame.image.load("queen.png"), (squareSize(N), squareSize(N)))
@@ -53,21 +52,28 @@ def start(numQueens):
 
     heapq.heappush(fringe, root)
     solutionFound = False
+    step = 0
+
     while run:
+        if solutionFound == False and not pause:
+            step += 1
+
         clock.tick(FPS)
         screen.fill(pygame.Color("white"))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pause = True
 
         if len(fringe) > 0:
-            if solutionFound == False:
+            if solutionFound == False and not pause:
                 currentNode = heapq.heappop(fringe)
-            drawGameState(screen, currentNode.board)
-
+            drawGameState(screen, currentNode.board, step)
             if currentNode.hn == 0:
                 solutionFound = True
-            else:
+            elif not pause:
                 visited.append(currentNode)
 
                 childrenNodes = []
@@ -104,8 +110,11 @@ def start(numQueens):
     pygame.quit()
 
 
-def drawGameState(screen, board):
+def drawGameState(screen, board, step, foundSolution):
     drawQueens(screen, board)
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(f"Step #: {step}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 0))
 
 
 def drawQueens(screen, board):

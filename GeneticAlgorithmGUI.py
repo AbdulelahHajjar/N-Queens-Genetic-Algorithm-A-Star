@@ -7,15 +7,14 @@ import copy
 
 FPS = 60
 
-WIDTH = 800
+WIDTH = 600
 HEIGHT = 600
-SIDEBAR_WIDTH = 200
 
 numQueens = 8
 
 
 def squareSize(N):
-    return (WIDTH - SIDEBAR_WIDTH) // numQueens
+    return (WIDTH) // numQueens
 
 
 queenImage = pygame.transform.scale(
@@ -25,7 +24,8 @@ queenImage = pygame.transform.scale(
 def start(n, populationCount, maxGenerations, mutationProbability):
     pygame.init()
     pygame.display.set_caption("Genetic Algorithm")
-
+    foundSolution = False
+    pause = False
     global numQueens
     numQueens = n
 
@@ -42,23 +42,45 @@ def start(n, populationCount, maxGenerations, mutationProbability):
     clock = pygame.time.Clock()
 
     while run:
-        generation += 1
+        if foundSolution == False and not pause and generation <= maxGenerations:
+            generation += 1
+
         clock.tick(FPS)
         screen.fill(pygame.Color("white"))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pause = True
 
-        drawGameState(screen, population[0].indices)
+        drawGameState(screen, population[0].indices, populationCount,
+                      generation, maxGenerations, mutationProbability)
 
-        if solutionInPopulation(population) == None:
+        if not pause and generation <= maxGenerations and (foundSolution == False and solutionInPopulation(population) == None):
             population = breedPopulation(population, mutationProbability)
+        else:
+            foundSolution = True
         pygame.display.flip()
     pygame.quit()
 
 
-def drawGameState(screen, board):
+def drawGameState(screen, board, populationSize, curGen, maxGen, mutationRate):
     drawQueens(screen, board)
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Population Size: {populationSize}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 0))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(f"Generation #:{curGen}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 20))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(f"Max Generations:{maxGen}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 40))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Mutation Rate:{mutationRate}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 60))
 
 
 def drawQueens(screen, board):
@@ -97,8 +119,8 @@ def geneticAlgorithm(p):
         newPopulation = []
         for i in range(len(population)):
             s = len(population)
-            index1 = int(s * random.random() ** (len(population) / 15))
-            index2 = int(s * random.random() ** (len(population) / 15))
+            index1 = int(s * random.random() ** (len(population) / 25))
+            index2 = int(s * random.random() ** (len(population) / 25))
             parent1 = population[index1]
             parent2 = population[index2]
             child = crossover(parent1, parent2)

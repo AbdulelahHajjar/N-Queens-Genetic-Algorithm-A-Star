@@ -114,7 +114,7 @@ class Ui_mainWindow(object):
         self.createdByLabel.setText(_translate(
             "mainWindow", "Created by: Abdulelah Hajjar | s201727090"))
         self.chooseAlgorithm.setText(_translate(
-            "mainWindow", "Choose how you would like to solve the N-Queens Problem:"))
+            "mainWindow", "Choose an algorithm: (Press ESC key to pause an algorithm)"))
         self.label.setText(_translate("mainWindow", "Genetics Algorithm"))
         self.numQueensGATF.setPlaceholderText(
             _translate("mainWindow", "Number of Queens"))
