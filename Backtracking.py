@@ -8,16 +8,6 @@ class VariableOrderings(enum.Enum):
     mrv = True
 
 
-def generateEmptyBoard(numQueens):
-    indices = [None] * numQueens
-    return BTBoard(indices)
-
-
-def solve(board, i):
-    if i == len(board):
-        return board
-
-
 def selectUnassignedColumnIndex(variableOrdering, board, i):
     if variableOrdering == VariableOrderings.mcv:
         return i + 1  # FIX
@@ -26,9 +16,22 @@ def selectUnassignedColumnIndex(variableOrdering, board, i):
     return i + 1
 
 
+def generateDomainValues(lcv, boardSize):
+    if lcv:
+        return [x for x in range(0, boardSize)]  # FIX
+    return [x for x in range(0, boardSize)]
+
+
+def solve(board, variableOrdering, i):
+    if i == len(board):
+        return board
+
+    newI = selectUnassignedColumnIndex(variableOrdering, board, i)
+    domainValues = generateDomainValues()
+
+
 def backtracking(board, variableOrdering, lcv, fc, arc):
-    print(repr(variableOrdering))
+    solve([], variableOrdering, 0)
 
 
-board = generateEmptyBoard(8)
-backtracking(None, True, True, True)
+backtracking(True, True, True)
