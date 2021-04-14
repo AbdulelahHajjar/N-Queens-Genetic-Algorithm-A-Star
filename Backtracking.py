@@ -4,7 +4,9 @@ import time
 import copy
 import sys
 
-calls = 0
+iterations = 0
+queenImage = pygame.transform.scale(
+    pygame.image.load("queen.png"), (squareSize(numQueens), squareSize(numQueens)))
 
 
 class VariableOrderings(enum.Enum):
@@ -15,6 +17,86 @@ class VariableOrderings(enum.Enum):
 class EarlyCheck(enum.Enum):
     arc = 0
     fc = 1
+
+
+def start(N, variableOrdering, earlyCheck, lcv):
+    pygame.init()
+    pygame.display.set_caption("PHW02")
+    foundSolution = False
+    pause = False
+
+    global queenImage
+    global calls
+
+    queenImage = pygame.transform.scale(
+        pygame.image.load("queen.png"), (squareSize(numQueens), squareSize(numQueens)))
+
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    run = True
+    clock = pygame.time.Clock()
+
+    while run:
+        if foundSolution == False and not pause:
+            iterations += 1
+
+        clock.tick(FPS)
+        screen.fill(pygame.Color("white"))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pause = True
+
+        drawGameState(screen,
+                      population[0].indices,
+                      populationCount,
+                      generation,
+                      maxGenerations,
+                      mutationProbability,
+                      foundSolution)
+
+        if not pause and generation <= maxGenerations and (foundSolution == False and solutionInPopulation(population) == None):
+            population = breedPopulation(population, mutationProbability)
+        else:
+            if solutionInPopulation(population) != None and generation <= maxGenerations:
+                foundSolution = True
+        pygame.display.flip()
+    pygame.quit()
+
+
+def drawGameState(screen, board, iterations, foundSolution):
+    drawQueens(screen, board)
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Population Size: {populationSize}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 0))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(f"Generation #:{curGen}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 20))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(f"Max Generations:{maxGen}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 40))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Mutation Rate:{mutationRate}", False, (0, 0, 0))
+    screen.blit(textsurface, (0, 60))
+    font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    textsurface = font.render(
+        f"Solution found" if foundSolution else "Solution not found", False, (255 if not foundSolution else 0, 255 if foundSolution else 0, 0))
+    screen.blit(textsurface, (0, 80))
+
+
+def drawQueens(screen, board):
+    colors = [pygame.Color("white"), pygame.Color("light blue")]
+    for row in range(numQueens):
+        for col in range(numQueens):
+            color = colors[(row + col) % 2]
+            pygame.draw.rect(screen, color, pygame.Rect(
+                col * squareSize(numQueens), row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
+            if board[col] == row:
+                screen.blit(queenImage, pygame.Rect(col * squareSize(numQueens),
+                                                    row * squareSize(numQueens), squareSize(numQueens), squareSize(numQueens)))
 
 
 def numLegalValues(board, col):
@@ -116,9 +198,8 @@ def backtracking(N, variableOrdering, earlyCheck, lcv):
     printBoard(result)
 
 
-# board = [1, None, None, None]
-# printBoard(board)
-# print(numLegalValues(board, 0))
-
-backtracking(8, variableOrdering=VariableOrderings.mrv,
-             earlyCheck=EarlyCheck.fc, lcv=False)
+if __name__ == '__main__':
+    start(N=8,
+          variableOrdering=VariableOrderings.mrv,
+          earlyCheck=EarlyCheck.fc,
+          lcv=True)
