@@ -20,32 +20,51 @@ class EarlyCheck(enum.Enum):
 def numLegalValues(board, col):
     count = 0
     for i in range(len(board)):
-        if (not (existsRowCollision(board, i) or existsDiagonalCollision(board, i, col))):
+        if (rowCollisions(board, i) == 0 and diagonalCollisions(board, i, col) == 0):
             count += 1
     return count
 
 
 def mrvColumn(board):
-    mrvCol = sys.maxsize
-    for col in range(len(board)):
-        count = numLegalValues(board, col)
-        if board[col] == None and count < mrvCol:
-            mrvCol = col
-    return mrvCol
+    cols = [x for x in range(0, len(board))]
+    cols = list(filter(lambda col: board[col] == None, cols))
+    cols.sort(key=lambda col: numLegalValues(board, col))
+    return 0 if cols.count == 0 else cols[0]
+
+
+def mcvColumn(board):
+    # All variables (columns) attack all other columns in the same number
+    return board.index(None)
 
 
 def selectUnassignedColumn(variableOrdering, board):
     if variableOrdering == VariableOrderings.mcv:
-        return board.index(None)  # FIX
+        return mcvColumn(board)
     elif variableOrdering == VariableOrderings.mrv:
         return mrvColumn(board)
     return board.index(None)
 
 
-def generateDomainValues(lcv, board):
+def sortedLcvRows(board, column):
+    rows = [x for x in range(0, len(board))]
+    rows.sort(key=lambda row: rowCollisions(board, row) +
+              diagonalCollisions(board, row, column))
+    # print(rows, "[0]:", rowCollisions(board, rows[0]) + diagonalCollisions(board, rows[0], column),
+    #       "[7]:", rowCollisions(board, rows[7]) + diagonalCollisions(board, rows[7], column))
+    return rows
+
+
+def generateDomainValues(lcv, board, col):
     if lcv:
-        return [x for x in range(0, len(board))]  # FIX
+        return sortedLcvRows(board, col)
     return [x for x in range(0, len(board))]
+
+
+def fcPassed(board):
+    for i in range(len(board)):
+        if board[i] == None and numLegalValues(board, i) == 0:
+            return False
+    return True
 
 
 def solve(board, variableOrdering, earlyCheck, lcv):
@@ -54,29 +73,35 @@ def solve(board, variableOrdering, earlyCheck, lcv):
     if None not in board:
         return board
     newC = selectUnassignedColumn(variableOrdering, board)
-    domainValues = generateDomainValues(lcv, board)
+    domainValues = generateDomainValues(lcv, board, newC)
     print(calls)
     for domainValue in domainValues:
-        if (not (existsRowCollision(board, domainValue) or existsDiagonalCollision(board, domainValue, newC))):
-            newBoard = copy.deepcopy(board)
-            newBoard[newC] = domainValue
-            result = solve(newBoard, variableOrdering,
+        if (rowCollisions(board, domainValue) == 0 and diagonalCollisions(board, domainValue, newC) == 0):
+            board[newC] = domainValue
+
+            if (earlyCheck == EarlyCheck.fc and not fcPassed(board)):
+                board[newC] = None
+                continue
+
+            solved = solve(board, variableOrdering,
                            earlyCheck, lcv)
-            if result == None:
-                newBoard[newC] = None
+
+            if solved == None:
+                board[newC] = None
             else:
-                return result
+                return solved
 
 
-def existsRowCollision(board, newRow):
-    return newRow in board
+def rowCollisions(board, row):
+    return len(list(filter(lambda r: r == row, board)))
 
 
-def existsDiagonalCollision(board, newR, newC):
+def diagonalCollisions(board, row, col):
+    num = 0
     for i in range(len(board)):
-        if (board[i] != None and abs(newC - i) == abs(board[i] - newR)):
-            return True
-    return False
+        if (board[i] != None and abs(col - i) == abs(board[i] - row)):
+            num += 1
+    return num
 
 
 def printBoard(board):
@@ -91,7 +116,9 @@ def backtracking(N, variableOrdering, earlyCheck, lcv):
     printBoard(result)
 
 
-# print(existsDiagonalCollision([1], 1))
-# print(existsDiagonalCollision([0, 3, None, None], 1, 2))
-backtracking(4, None,
-             earlyCheck=None, lcv=False)
+# board = [1, None, None, None]
+# printBoard(board)
+# print(numLegalValues(board, 0))
+
+backtracking(8, variableOrdering=VariableOrderings.mrv,
+             earlyCheck=EarlyCheck.fc, lcv=False)
