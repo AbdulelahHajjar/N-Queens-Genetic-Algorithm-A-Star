@@ -14,6 +14,18 @@ class EarlyCheck(enum.Enum):
     fc = True
 
 
+def numLegalValues(board, col):
+    count = 0
+    for i in range(len(board)):
+        if (not (existsRowCollision(board, i) or existsDiagonalCollision(board, i, col))):
+            count += 1
+    return count
+
+
+# def mrvColumn(board):
+#     for column in range(len(board)):
+
+
 def selectUnassignedColumn(variableOrdering, board):
     if variableOrdering == VariableOrderings.mcv:
         return board.index(None)  # FIX
@@ -70,7 +82,6 @@ def backtracking(N, variableOrdering, earlyCheck, lcv):
     result = solve([None] * N, variableOrdering, earlyCheck, lcv)
     printBoard(result)
 
-
 # print(existsDiagonalCollision([1], 1))
 # print(existsDiagonalCollision([0, 3, None, None], 1, 2))
-backtracking(8, variableOrdering=None, earlyCheck=None, lcv=False)
+# backtracking(8, variableOrdering=None, earlyCheck=None, lcv=False)
