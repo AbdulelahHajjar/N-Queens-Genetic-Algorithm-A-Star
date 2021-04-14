@@ -2,16 +2,19 @@ from random import randint
 import enum
 import time
 import copy
+import sys
+
+calls = 0
 
 
 class VariableOrderings(enum.Enum):
-    mcv = True
-    mrv = True
+    mcv = 0
+    mrv = 1
 
 
 class EarlyCheck(enum.Enum):
-    arc = True
-    fc = True
+    arc = 0
+    fc = 1
 
 
 def numLegalValues(board, col):
@@ -22,15 +25,20 @@ def numLegalValues(board, col):
     return count
 
 
-# def mrvColumn(board):
-#     for column in range(len(board)):
+def mrvColumn(board):
+    mrvCol = sys.maxsize
+    for col in range(len(board)):
+        count = numLegalValues(board, col)
+        if board[col] == None and count < mrvCol:
+            mrvCol = col
+    return mrvCol
 
 
 def selectUnassignedColumn(variableOrdering, board):
     if variableOrdering == VariableOrderings.mcv:
         return board.index(None)  # FIX
     elif variableOrdering == VariableOrderings.mrv:
-        return board.index(None)  # FIX
+        return mrvColumn(board)
     return board.index(None)
 
 
@@ -41,19 +49,19 @@ def generateDomainValues(lcv, board):
 
 
 def solve(board, variableOrdering, earlyCheck, lcv):
+    global calls
+    calls += 1
     if None not in board:
         return board
-
     newC = selectUnassignedColumn(variableOrdering, board)
     domainValues = generateDomainValues(lcv, board)
-
-    print(board)
-
+    print(calls)
     for domainValue in domainValues:
         if (not (existsRowCollision(board, domainValue) or existsDiagonalCollision(board, domainValue, newC))):
             newBoard = copy.deepcopy(board)
             newBoard[newC] = domainValue
-            result = solve(newBoard, variableOrdering, earlyCheck, lcv)
+            result = solve(newBoard, variableOrdering,
+                           earlyCheck, lcv)
             if result == None:
                 newBoard[newC] = None
             else:
@@ -82,6 +90,8 @@ def backtracking(N, variableOrdering, earlyCheck, lcv):
     result = solve([None] * N, variableOrdering, earlyCheck, lcv)
     printBoard(result)
 
+
 # print(existsDiagonalCollision([1], 1))
 # print(existsDiagonalCollision([0, 3, None, None], 1, 2))
-# backtracking(8, variableOrdering=None, earlyCheck=None, lcv=False)
+backtracking(4, None,
+             earlyCheck=None, lcv=False)
