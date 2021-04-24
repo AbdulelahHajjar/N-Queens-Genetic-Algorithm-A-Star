@@ -232,7 +232,7 @@ def solve(board, variableOrdering, earlyCheck, lcv):
 
 
 if __name__ == '__main__':
-    start(N=20,
-          variableOrdering=None,
-          earlyCheck=None,
-          lcv=False)
+    start(N=8,
+          variableOrdering=VariableOrderings.mrv,
+          earlyCheck=EarlyCheck.fc,
+          lcv=True)

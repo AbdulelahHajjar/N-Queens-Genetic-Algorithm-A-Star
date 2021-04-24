@@ -11,6 +11,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import AStarAlgorithmGUI
 import GeneticAlgorithmGUI
+import Backtracking
+from Backtracking import VariableOrderings
+from Backtracking import EarlyCheck
 
 
 class Ui_mainWindow(object):
@@ -29,11 +32,8 @@ class Ui_mainWindow(object):
         self.createdByLabel = QtWidgets.QLabel(self.centralwidget)
         self.createdByLabel.setGeometry(QtCore.QRect(190, 70, 261, 16))
         self.createdByLabel.setObjectName("createdByLabel")
-        self.chooseAlgorithm = QtWidgets.QLabel(self.centralwidget)
-        self.chooseAlgorithm.setGeometry(QtCore.QRect(10, 160, 371, 16))
-        self.chooseAlgorithm.setObjectName("chooseAlgorithm")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 190, 641, 221))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 89, 641, 351))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(
             self.horizontalLayoutWidget)
@@ -41,8 +41,52 @@ class Ui_mainWindow(object):
             QtWidgets.QLayout.SetDefaultConstraint)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_6.setSpacing(0)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.backtrackingBtn = QtWidgets.QPushButton(
+            self.horizontalLayoutWidget)
+        self.backtrackingBtn.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.backtrackingBtn.setObjectName("backtrackingBtn")
+        self.verticalLayout_6.addWidget(self.backtrackingBtn)
+        self.label_5 = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.label_5.setMaximumSize(QtCore.QSize(16777215, 10))
+        self.label_5.setObjectName("label_5")
+        self.verticalLayout_6.addWidget(self.label_5)
+        self.numQueensBT = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
+        self.numQueensBT.setObjectName("numQueensBT")
+        self.verticalLayout_6.addWidget(self.numQueensBT)
+        self.groupBox = QtWidgets.QGroupBox(self.horizontalLayoutWidget)
+        self.groupBox.setMaximumSize(QtCore.QSize(16777215, 60))
+        self.groupBox.setObjectName("groupBox")
+        self.fcRadio = QtWidgets.QRadioButton(self.groupBox)
+        self.fcRadio.setGeometry(QtCore.QRect(-10, 20, 189, 20))
+        self.fcRadio.setObjectName("fcRadio")
+        self.acRadio = QtWidgets.QRadioButton(self.groupBox)
+        self.acRadio.setGeometry(QtCore.QRect(-10, 40, 189, 20))
+        self.acRadio.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.acRadio.setObjectName("acRadio")
+        self.verticalLayout_6.addWidget(self.groupBox)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.horizontalLayoutWidget)
+        self.groupBox_2.setMaximumSize(QtCore.QSize(16777215, 60))
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.mrvRadio = QtWidgets.QRadioButton(self.groupBox_2)
+        self.mrvRadio.setGeometry(QtCore.QRect(10, 20, 100, 20))
+        self.mrvRadio.setObjectName("mrvRadio")
+        self.mcvRadio = QtWidgets.QRadioButton(self.groupBox_2)
+        self.mcvRadio.setGeometry(QtCore.QRect(10, 40, 100, 20))
+        self.mcvRadio.setObjectName("mcvRadio")
+        self.verticalLayout_6.addWidget(self.groupBox_2)
+        self.lcvCheckbox = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
+        self.lcvCheckbox.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.lcvCheckbox.setObjectName("lcvCheckbox")
+        self.verticalLayout_6.addWidget(self.lcvCheckbox)
+        self.horizontalLayout.addLayout(self.verticalLayout_6)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
+        self.geneticsBtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.geneticsBtn.setObjectName("geneticsBtn")
+        self.verticalLayout.addWidget(self.geneticsBtn)
         self.label = QtWidgets.QLabel(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -68,14 +112,12 @@ class Ui_mainWindow(object):
         spacerItem = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
-        self.geneticsBtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.geneticsBtn.clicked.connect(lambda: self.gaBtnClicked(self.numQueensGATF.text(
-        ), self.populationSizeTF.text(), self.maxGenerationsTF.text(), self.mutationRateTF.text()))
-        self.geneticsBtn.setObjectName("geneticsBtn")
-        self.verticalLayout.addWidget(self.geneticsBtn)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.aStarBtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.aStarBtn.setObjectName("aStarBtn")
+        self.verticalLayout_2.addWidget(self.aStarBtn)
         self.label_2 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -92,11 +134,6 @@ class Ui_mainWindow(object):
         spacerItem1 = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem1)
-        self.aStarBtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.aStarBtn.clicked.connect(
-            lambda: self.aStarBtnClicked(self.numQueensASTF.text()))
-        self.aStarBtn.setObjectName("aStarBtn")
-        self.verticalLayout_2.addWidget(self.aStarBtn)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         mainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(mainWindow)
@@ -112,9 +149,24 @@ class Ui_mainWindow(object):
         self.greetingsLabel.setText(_translate(
             "mainWindow", "Welcome to N-Queens Solver!"))
         self.createdByLabel.setText(_translate(
-            "mainWindow", "Created by: Abdulelah Hajjar | s201727090"))
-        self.chooseAlgorithm.setText(_translate(
-            "mainWindow", "Choose an algorithm: (Press ESC key to pause an algorithm)"))
+            "mainWindow", "Created by: Abdulelah Hajjar | s201727090 (Please PASTE the number in the textfields it types two letters there is a problem)"))
+        self.backtrackingBtn.setText(_translate("mainWindow", "Solve"))
+        self.backtrackingBtn.clicked.connect(
+            lambda: self.backtrackingBtnClicked(self.numQueensBT.text(), self.fcRadio.isChecked(), self.acRadio.isChecked(), self.mrvRadio.isChecked(), self.mcvRadio.isChecked(), self.lcvCheckbox.isChecked()))
+
+        self.label_5.setText(_translate("mainWindow", "Backtracking (PHW02)"))
+        self.numQueensBT.setPlaceholderText(
+            _translate("mainWindow", "Number of Queens"))
+        self.groupBox.setTitle(_translate("mainWindow", "Filtering"))
+        self.fcRadio.setText(_translate("mainWindow", "Forward Checking (FC)"))
+        self.acRadio.setText(_translate("mainWindow", "Arc Consistency"))
+        self.groupBox_2.setTitle(_translate("mainWindow", "Variable Ordering"))
+        self.mrvRadio.setText(_translate("mainWindow", "MRV"))
+        self.mcvRadio.setText(_translate("mainWindow", "MCV"))
+        self.lcvCheckbox.setText(_translate("mainWindow", "LCV"))
+        self.geneticsBtn.setText(_translate("mainWindow", "Solve"))
+        self.geneticsBtn.clicked.connect(lambda: self.gaBtnClicked(self.numQueensGATF.text(
+        ), self.populationSizeTF.text(), self.maxGenerationsTF.text(), self.mutationRateTF.text()))
         self.label.setText(_translate("mainWindow", "Genetics Algorithm"))
         self.numQueensGATF.setPlaceholderText(
             _translate("mainWindow", "Number of Queens"))
@@ -124,13 +176,12 @@ class Ui_mainWindow(object):
             _translate("mainWindow", "Maximum Number of Generations"))
         self.mutationRateTF.setPlaceholderText(
             _translate("mainWindow", "Mutation Rate (0-1)"))
-        self.geneticsBtn.setText(_translate(
-            "mainWindow", "Solve with Genetics Algorithm"))
+        self.aStarBtn.setText(_translate("mainWindow", "Solve"))
+        self.aStarBtn.clicked.connect(
+            lambda: self.aStarBtnClicked(self.numQueensASTF.text()))
         self.label_2.setText(_translate("mainWindow", "A* Algorithm"))
         self.numQueensASTF.setPlaceholderText(
             _translate("mainWindow", "Number of Queens"))
-        self.aStarBtn.setText(_translate(
-            "mainWindow", "Solve with A* Algorithm"))
 
     def gaBtnClicked(self, numQueens, populationCount, maxGens, mutationRate):
         GeneticAlgorithmGUI.start(
@@ -138,6 +189,17 @@ class Ui_mainWindow(object):
 
     def aStarBtnClicked(self, numQueens):
         AStarAlgorithmGUI.start(int(numQueens))
+
+    def backtrackingBtnClicked(self, numQueens, fc, arc, mrv, mcv, lcv):
+        variableOrdering = None
+        if mrv or mcv:
+            variableOrdering = VariableOrderings.mrv if mrv else VariableOrderings.mcv
+
+        earlyCheck = None
+        if fc or arc:
+            earlyCheck = EarlyCheck.fc if fc else EarlyCheck.arc
+
+        Backtracking.start(int(numQueens), variableOrdering, earlyCheck, lcv)
 
 
 if __name__ == "__main__":
